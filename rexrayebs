@@ -1,0 +1,34 @@
+Install REX-Ray on our Swarm manager and All Node using a command
+docker plugin install rexray/ebs EBS_ACCESSKEY=access_key EBS_SECRETKEY=secret_key
+
+Then we create a Docker volume using REX-ray: One Time
+docker volume create –driver rexray/ebs –opt size=5 –opt volumetype=gp2 –name ebs_vol
+
+Stack file
+
+version: '3.1'
+services:
+ kafka0:
+    image: httpd
+    ports:
+      - "9081:80"
+    volumes:
+      - ebs_vol:/data
+ kafka1:
+    image: httpd
+    ports:
+      - "9082:80"
+    volumes:
+      - ebs_vol:/data
+
+volumes:
+  ebs_vol:
+    external: true
+  ebs_vol:
+    external: true
+
+
+docker stack deploy -c ebs.yml ebs
+
+
+
